@@ -69,7 +69,6 @@
   .form-group {
     width: 100%; /* 讓輸入框寬度填滿 */
     margin-bottom: 15px;
-    cursor: pointer;
   }
   
   label {
