@@ -5,16 +5,24 @@ import ChatRoom from './components/ChatRoom.vue'
 
 const isLoggedIn = ref(false) // 登入狀態
 
+const username = ref('') // 使用者名稱
+
 const handleLoginSuccess = () => {
   isLoggedIn.value = true // 更新登入狀態為已登入
+}
+
+const handleUsernameUpdate = (newUsername) => {
+  username.value = newUsername // 更新使用者名稱
 }
 </script>
 
 <template>
   <div>
     <!-- 根據登入狀態切換顯示 -->
-    <Login v-if="!isLoggedIn" @login-success="handleLoginSuccess" />
-    <ChatRoom v-else />
+    <Login v-if="!isLoggedIn" 
+    @login-success="handleLoginSuccess"
+    @username="handleUsernameUpdate"  />
+    <ChatRoom v-else :username="username" />
   </div>
 </template>
 

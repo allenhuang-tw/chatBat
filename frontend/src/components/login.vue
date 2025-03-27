@@ -32,12 +32,16 @@
   
   const username = ref('')
   const password = ref('')
-  const emit = defineEmits(['login-success'])
+  const emit = defineEmits(['login-success', 'username'])
+
+  
   
   const handleLogin = () => {
     if (username.value.trim() && password.value.trim()) {
       alert(`歡迎, ${username.value}!`) // 模擬登入成功
       emit('login-success') // 通知父組件登入成功
+      //傳遞使用者名稱
+      emit('username', username.value)
     } else {
       alert('請輸入有效的使用者名稱和密碼')
     }

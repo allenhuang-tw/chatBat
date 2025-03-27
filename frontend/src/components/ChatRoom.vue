@@ -26,6 +26,10 @@
   
   <script setup>
   import { ref } from 'vue'
+
+  const props = defineProps({
+    username: String
+  })
   
   // 初始訊息列表，可依需求改為從後端取得歷史訊息
   const messages = ref([
@@ -37,7 +41,7 @@
   const sendMessage = () => {
     if (inputMessage.value.trim() === '') return
     messages.value.push({
-      user: '我',
+      user: props.username,
       content: inputMessage.value
     })
     inputMessage.value = ''
