@@ -1,4 +1,3 @@
-<!-- ChatRoom.vue -->
 <template>
     <div class="chat-container">
       <header>
@@ -46,83 +45,101 @@
     })
     inputMessage.value = ''
   }
-  </script>
-  
-  <style scoped>
-  .chat-container {
-    width: 400px;
-    margin: 50px auto;
-    border: 1px solid #444;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    background-color: #2c2c2c; /* 深色背景 */
-    color: #f1f1f1; /* 浅色文字 */
+  messages.value.push(message) // 本地先顯示
+  stompClient.publish({
+    destination: '/app/chat', // 後端 MessageMapping 路徑
+    body: JSON.stringify(message)
+  })
+  inputMessage.value = ''
+}
+
+onMounted(() => {
+  initWebSocket()
+})
+
+onBeforeUnmount(() => {
+  if (stompClient) {
+    stompClient.deactivate()
   }
-  
-  header {
-    background-color: #3a3a3a; /* 深色背景 */
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #444;
-    color: #fff; /* 浅色文字 */
-  }
-  
-  .chat-main {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    background-color: #2c2c2c; /* 深色背景 */
-  }
-  
-  .chat-messages {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .chat-messages li {
-    margin-bottom: 10px;
-  }
-  
-  .chat-messages .user {
-    font-weight: bold;
-    margin-right: 5px;
-    color: #4caf50; /* 用户名使用绿色 */
-  }
-  
-  .chat-footer {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #444;
-    background-color: #3a3a3a; /* 深色背景 */
-  }
-  
-  .chat-footer input[type="text"] {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background-color: #444; /* 深色输入框背景 */
-    color: #f1f1f1; /* 浅色文字 */
-  }
-  
-  .chat-footer input[type="text"]::placeholder {
-    color: #aaa; /* 浅色占位符 */
-  }
-  
-  .chat-footer button {
-    padding: 8px 12px;
-    margin-left: 10px;
-    border: none;
-    background-color: #4caf50;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .chat-footer button:hover {
-    background-color: #45a049;
-  }
-  </style>
+})
+</script>
+
+<style scoped>
+/* 和你原本的 CSS 可以共用 */
+.chat-container {
+  width: 400px;
+  margin: 50px auto;
+  border: 1px solid #444;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  background-color: #2c2c2c;
+  color: #f1f1f1;
+}
+
+header {
+  background-color: #3a3a3a;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+  color: #fff;
+}
+
+.chat-main {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #2c2c2c;
+}
+
+.chat-messages {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-messages li {
+  margin-bottom: 10px;
+}
+
+.chat-messages .user {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #4caf50;
+}
+
+.chat-footer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #444;
+  background-color: #3a3a3a;
+}
+
+.chat-footer input[type="text"] {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #444;
+  color: #f1f1f1;
+}
+
+.chat-footer input[type="text"]::placeholder {
+  color: #aaa;
+}
+
+.chat-footer button {
+  padding: 8px 12px;
+  margin-left: 10px;
+  border: none;
+  background-color: #4caf50;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chat-footer button:hover {
+  background-color: #45a049;
+}
+</style>
