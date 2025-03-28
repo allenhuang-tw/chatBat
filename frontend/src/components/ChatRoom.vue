@@ -24,26 +24,46 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import SockJS from 'sockjs-client/dist/sockjs.min.js'
+import { Client } from '@stomp/stompjs'
 
-  const props = defineProps({
-    username: String
+const messages = ref([
+  { user: '系統', content: '歡迎加入聊天室！' }
+])
+const inputMessage = ref('')
+let stompClient = null
+
+// 初始化 STOMP WebSocket 連線
+const initWebSocket = () => {
+  const socket = new SockJS('http://localhost:8080/ws') // 後端 Spring Boot 的 STOMP endpoint
+  stompClient = new Client({
+    webSocketFactory: () => socket,
+    reconnectDelay: 5000,
+    debug: (str) => {
+      console.log(str)
+    },
+    onConnect: () => {
+      console.log('STOMP 已連線')
+      // 訂閱 topic
+      stompClient.subscribe('/topic/chat', (message) => {
+        const data = JSON.parse(message.body)
+        messages.value.push(data)
+      })
+    },
+    onStompError: (frame) => {
+      console.error('STOMP 發生錯誤:', frame)
+    }
   })
-  
-  // 初始訊息列表，可依需求改為從後端取得歷史訊息
-  const messages = ref([
-    { user: '系統', content: '歡迎加入聊天室！' }
-  ])
-  const inputMessage = ref('')
-  
-  // 模擬發送訊息
-  const sendMessage = () => {
-    if (inputMessage.value.trim() === '') return
-    messages.value.push({
-      user: props.username,
-      content: inputMessage.value
-    })
-    inputMessage.value = ''
+  stompClient.activate()
+}
+
+// 發送訊息
+const sendMessage = () => {
+  if (inputMessage.value.trim() === '') return
+  const message = {
+    user: '我',
+    content: inputMessage.value
   }
   messages.value.push(message) // 本地先顯示
   stompClient.publish({
